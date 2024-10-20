@@ -1,7 +1,6 @@
 print("Hello World")
 
-print("TEstttt")
+T = 1
+V = 2
 
-
-#hoi hoi hoi
-#wowowow test
+Lagrangian = T - V
