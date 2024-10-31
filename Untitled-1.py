@@ -2,18 +2,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-Iterations = 10**4
-N = 7
+Iterations = (10**3)
+N = 20
 T = 4
-epsilon = T/N
+epsilon = T/(N)
 m = 1
 hbar = 1
 
 class randomPath:
-    np.random.seed(456486823)
+    #np.random.seed(456486823)
     xs = np.random.uniform(0,7,N)
-    xs[0],xs[-1] = 0,0
+    xs[0] = xs[-1] = 0
     #print(xs)
+
+
 
 def potiential(x):
     return 0.5*(x**2)
@@ -29,6 +31,9 @@ def energy(x):
         E += (0.5*m*(((x[i]-x[i-1])/epsilon)**2) + potiential((x[i]-x[i-1])/2))
     return E
 
+
+
+
 def iterate(num):
 
     initialPath = np.zeros(N)
@@ -42,10 +47,9 @@ def iterate(num):
 
         for i in range(1,len(initialPath)-1):
 
-            rand = random.random()
             init = perturbedPath[i]
             a = energy(perturbedPath)
-            perturbedPath[i] += 1*rand
+            perturbedPath[i] += np.random.uniform(0,1)
             b = energy(perturbedPath)
 
             action = epsilon * (b-a)
@@ -57,7 +61,7 @@ def iterate(num):
             else:
                 perturbedPath[i] = init
             
-    return perturbedPath/num
+    return perturbedPath/N
 
 t = np.zeros(N)
 for i in range(0,N):
