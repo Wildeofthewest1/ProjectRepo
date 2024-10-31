@@ -11,10 +11,9 @@ hbar = 1
 
 class randomPath:
     np.random.seed(456486823)
-    xs = random.random(1,7,N)
+    xs = np.random.uniform(1,7,N)
     xs[0],xs[-1] = 0,0
-
-    print(xs)
+    #print(xs)
 
 def potiential(x):
     return 0.5*(x**2)
@@ -25,18 +24,16 @@ def wavefunc(x):
 #--
 
 def energy(x):
-
     E = 0
-
-    for i in range(1,N+1):
+    for i in range(1,N):
         E += (0.5*m*(((x[i]-x[i-1])/epsilon)**2) + potiential((x[i]-x[i-1])/2))
     return E
 
 def iterate(num):
 
-    initialPath = np.zeros(N+1)
+    initialPath = np.zeros(N)
 
-    for i in range(0,N+1):
+    for i in range(0,N):
         initialPath[i] = randomPath.xs[i]
 
     perturbedPath = initialPath
@@ -55,7 +52,7 @@ def iterate(num):
 
             if action < 0: 
                 initialPath = perturbedPath
-            elif 0.1*random.randint(0,10) < np.exp(-action):
+            elif np.random.uniform(0,1) < np.exp(-action):
                 initialPath = perturbedPath
             else:
                 perturbedPath[i] = init
@@ -68,6 +65,6 @@ for i in range(0,N):
 
 print(t)
 
-#plt.plot(t,iterate(10**5))
+plt.plot(t,iterate(10**5))
 #plt.plot(t,wavefunc(t))
-#plt.show()
+plt.show()
