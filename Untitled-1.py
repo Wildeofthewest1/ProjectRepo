@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-
+Iterations = 10**4
 N = 7
 T = 4
 epsilon = T/N
@@ -11,7 +11,7 @@ hbar = 1
 
 class randomPath:
     np.random.seed(456486823)
-    xs = np.random.uniform(1,7,N)
+    xs = np.random.uniform(0,7,N)
     xs[0],xs[-1] = 0,0
     #print(xs)
 
@@ -63,8 +63,8 @@ t = np.zeros(N)
 for i in range(0,N):
     t[i] = epsilon*i
 
-print(t)
+#print(t)
 
-plt.plot(t,iterate(10**5))
+plt.plot(t,iterate(Iterations))
 #plt.plot(t,wavefunc(t))
 plt.show()
