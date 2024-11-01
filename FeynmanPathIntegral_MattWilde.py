@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-
+###afafafafa
 Iterations = (10**3)
 N = 20
 T = 4
