@@ -2,19 +2,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 ###afafafafa
-Iterations = (10**3)
-N = 20
+Iterations = (10**4)
+N = 7
 T = 4
 epsilon = T/(N)
 m = 1
 hbar = 1
 
-class randomPath:
-    #np.random.seed(456486823)
-    xs = np.random.uniform(0,7,N)
-    xs[0] = xs[-1] = 0
-    #print(xs)
-
+xf = 2
+xi = 0
+xrange = xf-xi
+dx = 0.05
+dt = T/N
+xs = np.linspace(xi,xf,int(((xrange)/dx)+1))
+print("xs =", xs)
 
 
 def potiential(x):
@@ -28,25 +29,39 @@ def wavefunc(x):
 def energy(x):
     E = 0
     for i in range(1,N):
-        E += (0.5*m*(((x[i]-x[i-1])/epsilon)**2) + potiential((x[i]-x[i-1])/2))
+        E += (0.5*m*(((x[i]-x[i-1])/dt)**2) + potiential((x[i]-x[i-1])/2))
     return E
 
+def generateNRandomPaths(N,x):
+    return
 
 
+def G(x):
 
-def iterate(num):
+    A = (m/(2*np.pi*dt))**(0.5*N)
 
-    initialPath = np.zeros(N)
+    for i in range(len(xs)):
 
-    for i in range(0,N):
-        initialPath[i] = randomPath.xs[i]
 
-    perturbedPath = initialPath
+    return A
 
-    for j in range(0,num):
+def psi(x):
+    denominator = 0
+    for i in range(len(x)):
+        denominator += G(x[i])*dx
+    return G(x)/denominator
 
+def iterate(num,x):
+
+    totalPath = np.zeros(N)
+    for k in range(0,num):
+        #create path starting at x
+        initialPath = np.random.uniform(-3,3,N)
+        initialPath[0] = initialPath[-1] = x
+        perturbedPath = initialPath
+        #perturbs our path at each element to create an optimised path
         for i in range(1,len(initialPath)-1):
-
+            
             init = perturbedPath[i]
             a = energy(perturbedPath)
             perturbedPath[i] += np.random.uniform(0,1)
@@ -61,7 +76,11 @@ def iterate(num):
             else:
                 perturbedPath[i] = init
             
-    return perturbedPath/N
+            totalPath += perturbedPath
+        
+    return totalPath/num
+        
+    
 
 t = np.zeros(N)
 for i in range(0,N):
@@ -69,6 +88,6 @@ for i in range(0,N):
 
 #print(t)
 
-plt.plot(t,iterate(Iterations))
-#plt.plot(t,wavefunc(t))
+plt.plot(xs,iterate(Iterations,xs))
+plt.plot(xs,wavefunc(xs))
 plt.show()
