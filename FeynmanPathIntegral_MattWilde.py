@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 ###afafafafa
-Iterations = (10**4)
-N = 7
+Iterations = (10**3)
+N = 20
 T = 4
-epsilon = T/(N)
+#epsilon = T/(N)
 m = 1
 hbar = 1
 
@@ -26,68 +26,67 @@ def wavefunc(x):
 
 #--
 
-def energy(x):
+def action(path):
     E = 0
     for i in range(1,N):
-        E += (0.5*m*(((x[i]-x[i-1])/dt)**2) + potiential((x[i]-x[i-1])/2))
-    return E
+        E += (0.5*m*(((path[i]-path[i-1])/dt)**2) + potiential((path[i]-path[i-1])/2))
+    return E*dt
 
 def generateNRandomPaths(N,x):
     return
 
 
-def G(x):
-
+def G(paths):
+    #paths is a 2d array containing all paths
     A = (m/(2*np.pi*dt))**(0.5*N)
-
-    for i in range(len(xs)):
-
-
-    return A
+    tot = 0
+    num = len(paths)
+    for i in range(num):
+        tot += dx*np.exp(-action(paths[i]))
+    return A*tot
 
 def psi(x):
-    denominator = 0
-    for i in range(len(x)):
-        denominator += G(x[i])*dx
+    denominator = 1
+
     return G(x)/denominator
 
-def iterate(num,x):
 
-    totalPath = np.zeros(N)
-    for k in range(0,num):
-        #create path starting at x
-        initialPath = np.random.uniform(-3,3,N)
-        initialPath[0] = initialPath[-1] = x
-        perturbedPath = initialPath
-        #perturbs our path at each element to create an optimised path
-        for i in range(1,len(initialPath)-1):
-            
-            init = perturbedPath[i]
-            a = energy(perturbedPath)
-            perturbedPath[i] += np.random.uniform(0,1)
-            b = energy(perturbedPath)
+def metropolis(num,x):
+    set = np.zeros(shape=(len(x),N))
+    for array in range(len(x)):
+        totalPath = np.zeros(N)
+        for k in range(0,num):
+            #create path starting at x
+            initialPath = np.random.uniform(-3,3,N)
+            initialPath[0] = initialPath[-1] = x[array]
+            perturbedPath = initialPath
+            #perturbs our path at each element to create a slightly more optimised path
+            for i in range(1,len(initialPath)-1):
+                
+                init = perturbedPath[i]
+                a = action(perturbedPath)
+                perturbedPath[i] += np.random.uniform(0,1)
+                b = action(perturbedPath)
 
-            action = epsilon * (b-a)
+                actiondiff = (b-a)
 
-            if action < 0: 
-                initialPath = perturbedPath
-            elif np.random.uniform(0,1) < np.exp(-action):
-                initialPath = perturbedPath
-            else:
-                perturbedPath[i] = init
-            
-            totalPath += perturbedPath
+                if actiondiff < 0: 
+                    initialPath = perturbedPath
+                elif np.random.uniform(0,1) < np.exp(-actiondiff):
+                    initialPath = perturbedPath
+                else:
+                    perturbedPath[i] = init
+                
+                totalPath += perturbedPath
+        set[array] = totalPath/num
+
+    return set
         
-    return totalPath/num
-        
-    
+#print(metropolis(10**4,0))
+#print(G(metropolis(Iterations,xs)))
 
-t = np.zeros(N)
-for i in range(0,N):
-    t[i] = epsilon*i
 
-#print(t)
 
-plt.plot(xs,iterate(Iterations,xs))
+plt.plot(xs,psi(xs))
 plt.plot(xs,wavefunc(xs))
 plt.show()
