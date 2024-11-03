@@ -36,51 +36,50 @@ def generateNRandomPaths(N,x):
     return
 
 
-def G(paths):
+def G(paths):# takes in many paths and converts them to one unnormalized weighted path
     #paths is a 2d array containing all paths
     A = (m/(2*np.pi*dt))**(0.5*N)
     tot = 0
+    pathSum = np.zeros(N)
     num = len(paths)
     for i in range(num):
-        tot += dx*np.exp(-action(paths[i]))
-    return A*tot
+        pathSum += paths[i]*np.exp(-action(paths[i]))
 
-def psi(x):
+    return A*pathSum
+
+def psi( paths, x):
     denominator = 1
+    # integral here is sum of paths starting at -3 to +3
+    return G(paths)/denominator
 
-    return G(x)/denominator
 
+def metropolis(num,x): #generates optimized paths that start and end at a given x
 
-def metropolis(num,x):
-    set = np.zeros(shape=(len(x),N))
-    for array in range(len(x)):
-        totalPath = np.zeros(N)
-        for k in range(0,num):
-            #create path starting at x
-            initialPath = np.random.uniform(-3,3,N)
-            initialPath[0] = initialPath[-1] = x[array]
-            perturbedPath = initialPath
-            #perturbs our path at each element to create a slightly more optimised path
-            for i in range(1,len(initialPath)-1):
-                
-                init = perturbedPath[i]
-                a = action(perturbedPath)
-                perturbedPath[i] += np.random.uniform(0,1)
-                b = action(perturbedPath)
+    totalPath = np.zeros(N)
+    for k in range(0,num):
+        #create path starting at x
+        initialPath = np.random.uniform(-3,3,N)
+        initialPath[0] = initialPath[-1] = x
+        perturbedPath = initialPath
+        #perturbs our path at each element to create a slightly more optimised path
+        for i in range(1,len(initialPath)-1):
+            
+            init = perturbedPath[i]
+            a = action(perturbedPath)
+            perturbedPath[i] += np.random.uniform(0,1)
+            b = action(perturbedPath)
 
-                actiondiff = (b-a)
+            actiondiff = (b-a)
 
-                if actiondiff < 0: 
-                    initialPath = perturbedPath
-                elif np.random.uniform(0,1) < np.exp(-actiondiff):
-                    initialPath = perturbedPath
-                else:
-                    perturbedPath[i] = init
-                
-                totalPath += perturbedPath
-        set[array] = totalPath/num
+            if actiondiff < 0: 
+                initialPath = perturbedPath
+            elif np.random.uniform(0,1) < np.exp(-actiondiff):
+                initialPath = perturbedPath
+            else:
+                perturbedPath[i] = init
+            
+            totalPath += perturbedPath
 
-    return set
         
 #print(metropolis(10**4,0))
 #print(G(metropolis(Iterations,xs)))
