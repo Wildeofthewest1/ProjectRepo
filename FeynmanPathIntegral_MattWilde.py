@@ -1,16 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.integrate import quad
+
 #--
-Iterations = (10**3)
+Iterations = (10**5)
 N = 7
 T = 4
 #epsilon = T/(N)
 m = 1
 hbar = 1
 
-xf = 3
-xi = -3
+xf = 2
+xi = 0
 xrange = xf-xi
 dx = 0.05
 dt = T/N
@@ -27,17 +27,16 @@ xs2 = np.linspace(xi1,xf1,TotalXs1)
 A = (m/(2*np.pi*dt))**(0.5*N)
 #print("xs =", xs)
 
-#def potiential(x):
-#    return 0.5*(x**2)
-
 def wavefunc(x):
     return (np.exp(0.5*-x**2)/np.pi**0.25)**2
 
+def potential(x):
+    return 0.5*(x**2)
 
 def action(path):
     E = 0
     for i in range(1,N):
-        E += (0.5*m*(((path[i]-path[i-1])/dt)**2) + 0.5*((path[i]-path[i-1])**2))
+        E += (0.5*m*(((path[i]-path[i-1])/dt)**2) + potential(0.5*(path[i]+path[i-1])))
     return E*dt
 
 def actionElement(x1,x):
@@ -78,6 +77,7 @@ def actionElement(x1,x):
 
     return array
 
+
 def generateNRandomPaths(numberOfPaths,x):
     array = np.zeros(shape=(numberOfPaths,N))
     for j in range(0,numberOfPaths):
@@ -86,20 +86,15 @@ def generateNRandomPaths(numberOfPaths,x):
         array[j] = initialPath
     return array
 
-
-def G(paths):# takes in many paths with the same starting point and converts them to one point
+def G(paths):#sums action of all paths
     #paths is a 2d array containing all paths
     
     num = len(paths)
-
-    pathSum = 0 #np.zeros(N)
-
+    pathSum = 0
     for i in range(num):
-        pathSum += action(paths[i])
+        pathSum += np.exp(-action(paths[i]))
 
-    average = pathSum
-    #B = np.average(pathSum)
-    return average*A
+    return pathSum
 
 def generateDenominator():
     sum = 0
@@ -108,25 +103,17 @@ def generateDenominator():
     denominator = sum
     return denominator*dx
 
-#print(generateDenominator())
 denominator = generateDenominator()
 
-
 def psi(x):
-
 
     numerator = G(generateNRandomPaths(Iterations,x)) #propagator for paths at x, for example: G(metropolis(num,x))
     
     #/num #sum of propagator*dx of path at -3...+3 for example: dx*(G(metropolis(num),-3) + ... + G(metropolis(num),3))
 
     probability = numerator/denominator
-
+    
     return probability
-a = 0
-#print(psi(a),wavefunc(a))
-
-
-#print(G(generateNRandomPaths(Iterations,1))/generateDenominator())
 
 
 #print(metropolis(10**4,0))
