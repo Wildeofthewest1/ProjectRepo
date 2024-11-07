@@ -2,15 +2,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #--
-Iterations = (10**4)
+Iterations = (10**5)
 N = 7
 T = 4
 #epsilon = T/(N)
 m = 1
 hbar = 1
 
-xf = 2
-xi = 0
+xf = 3
+xi = -3
 xrange = xf-xi
 dx = 0.05
 dt = T/N
@@ -107,8 +107,8 @@ def generateDenominator(): #sum of propagator*dx of path at -3...+3 for example:
 
 #denominator = generateDenominator()
 #print(denominator)
-denominator = 13.424550924328017
-
+#denominator = 13.424550924328017
+denominator = 136.22891862560073
 def psi(x):
 
     if not metro:
@@ -116,7 +116,7 @@ def psi(x):
     else:
         numerator = G(metropolis(Iterations,x)) #metropolis paths
     probability = numerator/denominator
-    print("Probability added")
+    #print("Probability added")
     return probability
 
 #print(metropolis(10**4,0))
