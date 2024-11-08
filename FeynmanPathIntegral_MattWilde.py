@@ -127,8 +127,14 @@ def generatePlot():
         array1[i] = psi(xs[i])
     return plt.plot(xs,array1)
 
-plt.ylabel("Probability")
+moi = generateNRandomPaths(1,0)[0]
+time = np.arange(0,T,dt)/dt
+plt.plot(moi,time)
+
+
+#plt.ylabel("Probability")
+plt.ylabel("Time")
 plt.xlabel("X-Position")
-generatePlot()
-plt.plot(xs,wavefunc(xs))
+#generatePlot()
+#plt.plot(xs,wavefunc(xs))
 plt.show()
