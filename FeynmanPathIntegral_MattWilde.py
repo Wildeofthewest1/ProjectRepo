@@ -104,6 +104,7 @@ def generatePlot():
         if not metro: array1[i] = G(generateNRandomPaths(Iterations,xs[i])) #brute force paths
         else: array1[i] = G(metropolis(n,xs[i])) #metropolis paths
         sum += array1[i]
+        print((i+1)/len(xs)+"% Complete!")
     return plt.plot(xs,array1/(sum*dx))
 
 #moi = generateNRandomPaths(1,0)[0]
