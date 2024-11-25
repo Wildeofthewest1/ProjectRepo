@@ -23,6 +23,8 @@ TotalXs1 = int(((xrange1)/dx)+1)
 
 xs = np.linspace(xi,xf,TotalXs)
 xs2 = np.linspace(xi1,xf1,TotalXs1)
+#print(xs)
+#print(xs2)
 A = (m/(2*np.pi*dt))**(0.5*N)
 #print("xs =", xs)
 
@@ -40,6 +42,8 @@ def action(path):
 
 def metropolis(numberOfPaths,x): #iterates num times to generate optimized paths that start and end at a given x
 
+    thermalInterval = 10
+
     array = np.zeros(shape=(numberOfPaths,N))
     initialPath = np.random.uniform(-3,3,N) # generate random path
     initialPath[0] = initialPath[-1] = x # set starting points to x
@@ -50,9 +54,9 @@ def metropolis(numberOfPaths,x): #iterates num times to generate optimized paths
 
         perturbedPath = initialPath
         
-        for i in range(1,len(initialPath)-1): #perturbs our path at each element to create a slightly more optimised path
+        for i in range(1,N-1): #perturbs our path at each element to create a slightly more optimised path
 
-            init = perturbedPath[i]
+            old = perturbedPath[i]
             a = action(perturbedPath)
             perturbedPath[i] += np.random.uniform(0,2)-1
             b = action(perturbedPath)
@@ -63,10 +67,10 @@ def metropolis(numberOfPaths,x): #iterates num times to generate optimized paths
             elif np.random.uniform(0,1) < np.exp(-actiondiff):
                 initialPath = perturbedPath
             else:
-                perturbedPath[i] = init
+                perturbedPath[i] = old
         
         k += 1
-        if k == 100:
+        if k == thermalInterval:
             array[j] = perturbedPath
             j+=1
             k = 0
@@ -90,38 +94,17 @@ def G(paths):#sums action of all paths
         
     return pathSum
 
-
-
 metro = True
-n = 1000
-
-def generateDenominator(): #sum of propagator*dx of path at -3...+3 for example: dx*(G(metropolis(num),-3) + ... + G(metropolis(num),3))
-    sum = 0
-    for i in range(len(xs2)):
-            if not metro:
-                sum += G(generateNRandomPaths(Iterations,xs2[i]))
-            else:
-                sum += G(metropolis(n,xs2[i]))
-    denominator = sum
-    return denominator*dx
-
-denominator = generateDenominator()
-
-def psi(x):
-
-    if not metro:
-        numerator = G(generateNRandomPaths(Iterations,x)) #brute force paths
-    else:
-        numerator = G(metropolis(n,x)) #metropolis paths
-    probability = numerator/denominator
-
-    return probability
+n = 10000
 
 def generatePlot():
     array1 = np.zeros(len(xs))
+    sum = 0
     for i in range(len(xs)):
-        array1[i] = psi(xs[i])
-    return plt.plot(xs,array1)
+        if not metro: array1[i] = G(generateNRandomPaths(Iterations,xs[i])) #brute force paths
+        else: array1[i] = G(metropolis(n,xs[i])) #metropolis paths
+        sum += array1[i]
+    return plt.plot(xs,array1/(sum*dx))
 
 #moi = generateNRandomPaths(1,0)[0]
 #time = np.arange(0,T,dt)/dt
