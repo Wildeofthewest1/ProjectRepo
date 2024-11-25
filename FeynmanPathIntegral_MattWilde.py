@@ -22,10 +22,7 @@ xrange1 = xf1-xi1
 TotalXs1 = int(((xrange1)/dx)+1)
 
 xs = np.linspace(xi,xf,TotalXs)
-xs2 = np.linspace(xi1,xf1,TotalXs1)
-#print(xs)
-#print(xs2)
-A = (m/(2*np.pi*dt))**(0.5*N)
+#A = (m/(2*np.pi*dt))**(0.5*N)
 #print("xs =", xs)
 
 def wavefunc(x):
@@ -95,7 +92,7 @@ def G(paths):#sums action of all paths
     return pathSum
 
 metro = True
-n = 10000
+n = 100
 
 def generatePlot():
     array1 = np.zeros(len(xs))
@@ -104,7 +101,7 @@ def generatePlot():
         if not metro: array1[i] = G(generateNRandomPaths(Iterations,xs[i])) #brute force paths
         else: array1[i] = G(metropolis(n,xs[i])) #metropolis paths
         sum += array1[i]
-        print((i+1)/len(xs)+"% Complete!")
+        print("{:0.2f}% complete".format(100*(i+1)/len(xs)))
     return plt.plot(xs,array1/(sum*dx))
 
 #moi = generateNRandomPaths(1,0)[0]
