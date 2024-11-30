@@ -123,28 +123,64 @@ def G(paths):#sums action of all paths
     return pathSum
 
 metro = True
-n = 100000
 
-def Psi():
+def Psi(num):
     array1 = np.zeros(len(xs))
     sum = 0
     for i in range(len(xs)):
         if not metro: array1[i] = G(generateNRandomPaths(Iterations,xs[i])) #brute force paths
-        else: array1[i] = G(metropolis(n,xs[i])) #metropolis paths
+        else: array1[i] = G(metropolis(num,xs[i])) #metropolis paths
         sum += array1[i]
-        print(xs[i])
+        #print(xs[i])
     return array1/(sum*dx)
+
+def average(num_to_avs,paths1):
+    l = len(xs)
+    array = np.zeros(shape=(num_to_avs,l))
+    ave = np.zeros(l)
+    errs = np.zeros(l)
+    analytic = wavefunc(xs)
+    #print(array)
+    for i in range(num_to_avs):
+        print(i)
+        array[i] = Psi(paths1)
+        ave += array[i]
+    for k in range(l):
+        errs[k] = np.std(array[:,k])
+    averageys = ave/num_to_avs
+    aveerrs = errs/np.sqrt(num_to_avs)
+
+    residuals = (averageys-analytic)/np.sqrt(analytic)
+    reserrs = aveerrs/np.sqrt(analytic)
+    return averageys, aveerrs, residuals, reserrs
+
 
 #moi = generateNRandomPaths(1,0)[0]
 #time = np.arange(0,T,dt)/dt
 #plt.plot(moi,time)
 
+f1 = plt.figure(1)
 
 plt.ylabel("Probability")
-#plt.ylabel("Time")
 plt.xlabel("X-Position")
-plt.plot(xs,Psi())
+#plt.plot(xs,Psi(paths))
+
+ys, yerrs, normres, reserrs = average(10,50)
+plt.errorbar(xs, ys, yerrs, capsize=2)
 plt.plot(xs,wavefunc(xs))
+
+f2 = plt.figure(2)
+
+plt.ylabel("Norm-Residuals")
+plt.xlabel("X-Position")
+
+plt.errorbar(xs,normres,reserrs, fmt=".", capsize=2)
+plt.plot(xs,normres*0)
+plt.plot(xs,np.std(normres))
+plt.plot(xs,-np.std(normres))
+plt.plot(xs,2*np.std(normres))
+plt.plot(xs,-2*np.std(normres))
+
 #actionarray = metropolis(100,0)
 #plt.plot(np.arange(0,100,1),actionarray)
 plt.show()
