@@ -1,8 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from numba import cuda
-import cupy as cp
-import time
 
 #--
 Iterations = (10**5)
@@ -131,24 +128,8 @@ def Psi(num):
     array1 = np.zeros(len(xs))
     sum = 0
     for i in range(len(xs)):
-        if not metro: array1[i] = G(generateNRandomPaths(Iterations,xs[i])) #brute force paths
-        else: 
-            
-            
-            
-            
-            
-            
-            array1[i] = G(metropolis(num,xs[i])) #metropolis paths
 
-
-
-
-
-
-
-
-
+        array1[i] = G(metropolis(num,xs[i])) #metropolis paths
 
         sum += array1[i]
         #print(xs[i])
@@ -174,9 +155,6 @@ def average(num_to_avs,paths1):
     reserrs = aveerrs/np.sqrt(analytic)
     return averageys, aveerrs, residuals, reserrs
 
-
-cuda.detect()
-
 #moi = generateNRandomPaths(1,0)[0]
 #time = np.arange(0,T,dt)/dt
 #plt.plot(moi,time)
@@ -201,9 +179,6 @@ plt.errorbar( xs, normres, reserrs, fmt=".", color = "#8C000F", capsize=2)
 for i in range(-3,4):
     plt.plot(xs,i*stdresarray, color='grey', linestyle='dashed')
 
-
 #actionarray = metropolis(100,0)
 #plt.plot(np.arange(0,100,1),actionarray)
 plt.show()
-
-print(cp.cuda.runtime.is_available())
