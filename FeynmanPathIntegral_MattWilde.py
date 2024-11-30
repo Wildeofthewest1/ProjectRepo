@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 #--
 Iterations = (10**5)
 N = 7
-T = 4
+T = N
 #epsilon = T/(N)
 m = 1
 hbar = 1
@@ -108,7 +108,7 @@ def metropolis(numberOfPaths,x): #iterates num times to generate optimized paths
 def generateNRandomPaths(numberOfPaths,x):
     array = np.zeros(shape=(numberOfPaths,N))
     for j in range(0,numberOfPaths):
-        initialPath = np.random.uniform(-3,3,N)
+        initialPath = np.random.uniform(-xi,xi,N)
         initialPath[0] = initialPath[-1] = x
         array[j] = initialPath
     return array
