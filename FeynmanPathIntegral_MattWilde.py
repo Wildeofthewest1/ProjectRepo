@@ -53,7 +53,7 @@ def metropolis(numberOfPaths,x): #iterates num times to generate optimized paths
 
     #ac = rj = t = 0
     #actionarray = np.zeros(100)
-    for u in range(1,41):
+    for seed in range(1,41):
         perturbedPath = initialPath
         # The following loop is equivalent to one thermalization sweep
         for i in range(1,N-1):
@@ -123,7 +123,7 @@ def G(paths):#sums action of all paths
     return pathSum
 
 metro = True
-n = 10000
+n = 100000
 
 def Psi():
     array1 = np.zeros(len(xs))
