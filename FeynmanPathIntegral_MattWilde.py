@@ -11,17 +11,12 @@ hbar = 1
 
 xf = 3
 xi = -3
-xrange = xf-xi
+
 dx = 0.05
 dt = T/N
-TotalXs = int(((xrange)/dx)+1)
+_dt = N/T
 
-xf1 = 3
-xi1 = -3
-xrange1 = xf1-xi1
-TotalXs1 = int(((xrange1)/dx)+1)
-
-xs = np.linspace(xi,xf,TotalXs)
+xs = np.arange(xi,dx-xi,dx)
 #A = (m/(2*np.pi*dt))**(0.5*N)
 #print("xs =", xs)
 
@@ -31,40 +26,76 @@ def wavefunc(x):
 def potential(x):
     return 0.5*(x**2)
 
-def action(path):
+def kinetic(v):
+    return 0.5*m*(v**2)
+
+def S(path):
     E = 0
     for i in range(1,N):
-        E += (0.5*m*(((path[i]-path[i-1])/dt)**2) + potential(0.5*(path[i]+path[i-1])))
-    return E*dt
+        E += S_j(path,i)
+    return E
+
+def S_j(path,i):
+    return dt*(kinetic((path[i]-path[i-1])*_dt) + potential(0.5*(path[i]+path[i-1])))
 
 def metropolis(numberOfPaths,x): #iterates num times to generate optimized paths that start and end at a given x
 
     thermalInterval = 10
 
     array = np.zeros(shape=(numberOfPaths,N))
-    initialPath = np.random.uniform(-3,3,N) # generate random path
+    initialPath = np.ones(N)*5
+    #np.random.uniform(-3,3,N) # generate random path
     initialPath[0] = initialPath[-1] = x # set starting points to x
+
+    #seeding the algorithm should take place here
+    #goal is to perform thermalizations until the path acceptance rate is between 40-60%
+    #an optimised path is generated after around 20-40 sweeps based on several trials
+
+    #ac = rj = t = 0
+    #actionarray = np.zeros(100)
+    for u in range(1,41):
+        perturbedPath = initialPath
+        # The following loop is equivalent to one thermalization sweep
+        for i in range(1,N-1):
+            old = perturbedPath[i]
+            a = S_j(perturbedPath,i)+S_j(perturbedPath,i+1) #Finds the change in action at x_j
+            perturbedPath[i] += np.random.uniform(-1,1)
+            b = S_j(perturbedPath,i)+S_j(perturbedPath,i+1)
+            actiondiff = (b-a)
+
+            if actiondiff < 0 or np.random.uniform(0,1) < np.exp(-actiondiff):
+                #ac += 1
+                initialPath[i] = perturbedPath[i]
+
+            else:
+                #rj += 1
+                perturbedPath[i] = old
+
+        #t+=100*ac/(ac+rj)
+        #print(t/u, u)
+        #ac = rj =0
+        #actionarray[u-1] = S(perturbedPath)
+    #print(np.std(actionarray))
+
+
+    #metropolis starts here using the seeded path
 
     j = 0
     k = 0
     while j < numberOfPaths:
 
         perturbedPath = initialPath
-        
-        for i in range(1,N-1): #perturbs our path at each element to create a slightly more optimised path
 
+        # The following loop is equivalent to one thermalization sweep
+        for i in range(1,N-1):
             old = perturbedPath[i]
-            a = action(perturbedPath)
-            perturbedPath[i] += np.random.uniform(0,2)-1
-            b = action(perturbedPath)
+            a = S_j(perturbedPath,i)+S_j(perturbedPath,i+1) #Finds the change in action at x_j
+            perturbedPath[i] += np.random.uniform(-1,1)
+            b = S_j(perturbedPath,i)+S_j(perturbedPath,i+1)
             actiondiff = (b-a)
 
-            if actiondiff < 0: 
-                initialPath = perturbedPath
-            elif np.random.uniform(0,1) < np.exp(-actiondiff):
-                initialPath = perturbedPath
-            else:
-                perturbedPath[i] = old
+            if actiondiff < 0 or np.random.uniform(0,1) < np.exp(-actiondiff): initialPath[i] = perturbedPath[i]
+            else: perturbedPath[i] = old
         
         k += 1
         if k == thermalInterval:
@@ -87,22 +118,22 @@ def G(paths):#sums action of all paths
     num = len(paths)
     pathSum = 0
     for i in range(num):
-        pathSum += np.exp(-action(paths[i]))
+        pathSum += np.exp(-S(paths[i]))
         
     return pathSum
 
 metro = True
-n = 100
+n = 10000
 
-def generatePlot():
+def Psi():
     array1 = np.zeros(len(xs))
     sum = 0
     for i in range(len(xs)):
         if not metro: array1[i] = G(generateNRandomPaths(Iterations,xs[i])) #brute force paths
         else: array1[i] = G(metropolis(n,xs[i])) #metropolis paths
         sum += array1[i]
-        print("{:0.2f}% complete".format(100*(i+1)/len(xs)))
-    return plt.plot(xs,array1/(sum*dx))
+        print(xs[i])
+    return array1/(sum*dx)
 
 #moi = generateNRandomPaths(1,0)[0]
 #time = np.arange(0,T,dt)/dt
@@ -112,6 +143,8 @@ def generatePlot():
 plt.ylabel("Probability")
 #plt.ylabel("Time")
 plt.xlabel("X-Position")
-generatePlot()
+plt.plot(xs,Psi())
 plt.plot(xs,wavefunc(xs))
+#actionarray = metropolis(100,0)
+#plt.plot(np.arange(0,100,1),actionarray)
 plt.show()
