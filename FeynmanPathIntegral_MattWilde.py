@@ -173,13 +173,13 @@ f2 = plt.figure(2)
 
 plt.ylabel("Norm-Residuals")
 plt.xlabel("X-Position")
-
+stdresarray = np.ones(len(normres))*np.std(normres)
 plt.errorbar(xs,normres,reserrs, fmt=".", capsize=2)
 plt.plot(xs,normres*0)
-plt.plot(xs,np.std(normres))
-plt.plot(xs,-np.std(normres))
-plt.plot(xs,2*np.std(normres))
-plt.plot(xs,-2*np.std(normres))
+plt.plot(xs,stdresarray)
+plt.plot(xs,-stdresarray)
+plt.plot(xs,2*stdresarray)
+plt.plot(xs,-2*stdresarray)
 
 #actionarray = metropolis(100,0)
 #plt.plot(np.arange(0,100,1),actionarray)
