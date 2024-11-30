@@ -142,9 +142,9 @@ def average(num_to_avs,paths1):
     analytic = wavefunc(xs)
     #print(array)
     for i in range(num_to_avs):
-        print(i)
         array[i] = Psi(paths1)
         ave += array[i]
+        print(i)
     for k in range(l):
         errs[k] = np.std(array[:,k])
     averageys = ave/num_to_avs
@@ -165,7 +165,7 @@ plt.ylabel("Probability")
 plt.xlabel("X-Position")
 #plt.plot(xs,Psi(paths))
 
-ys, yerrs, normres, reserrs = average(10,50)
+ys, yerrs, normres, reserrs = average(100,50)
 plt.errorbar(xs, ys, yerrs, capsize=2)
 plt.plot(xs,wavefunc(xs))
 
@@ -174,12 +174,11 @@ f2 = plt.figure(2)
 plt.ylabel("Norm-Residuals")
 plt.xlabel("X-Position")
 stdresarray = np.ones(len(normres))*np.std(normres)
-plt.errorbar(xs,normres,reserrs, fmt=".", capsize=2)
-plt.plot(xs,normres*0)
-plt.plot(xs,stdresarray)
-plt.plot(xs,-stdresarray)
-plt.plot(xs,2*stdresarray)
-plt.plot(xs,-2*stdresarray)
+plt.errorbar( xs, normres, reserrs, fmt=".", color = "#8C000F", capsize=2)
+
+for i in range(-3,4):
+    plt.plot(xs,i*stdresarray, color='grey', linestyle='dashed')
+
 
 #actionarray = metropolis(100,0)
 #plt.plot(np.arange(0,100,1),actionarray)
