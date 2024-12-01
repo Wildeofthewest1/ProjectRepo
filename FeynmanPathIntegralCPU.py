@@ -141,18 +141,24 @@ def average(num_to_avs,paths1):
     ave = np.zeros(l)
     errs = np.zeros(l)
     analytic = wavefunc(xs)
+
     #print(array)
     for i in range(num_to_avs):
         array[i] = Psi(paths1)
         ave += array[i]
         print(i)
+
     for k in range(l):
         errs[k] = np.std(array[:,k])
+
+
     averageys = ave/num_to_avs
     aveerrs = errs/np.sqrt(num_to_avs)
 
     residuals = (averageys-analytic)/np.sqrt(analytic)
     reserrs = aveerrs/np.sqrt(analytic)
+
+
     return averageys, aveerrs, residuals, reserrs
 
 #moi = generateNRandomPaths(1,0)[0]
@@ -165,11 +171,10 @@ plt.ylabel("Probability")
 plt.xlabel("X-Position")
 #plt.plot(xs,Psi(paths))
 
-ys, yerrs, normres, reserrs = average(2,5)
+ys, yerrs, normres, reserrs = average(5,50)
 plt.errorbar(xs, ys, yerrs, capsize=2)
 plt.plot(xs,wavefunc(xs))
 
-f2 = plt.figure(2)
 
 plt.ylabel("Norm-Residuals")
 plt.xlabel("X-Position")
